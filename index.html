@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lifecare - Your Complete Healthcare Portal</title>
+    
+    <!-- External Leaflet CSS for Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- Project Stylesheet -->
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+
+    <!-- ==================== 1. LOGIN / AUTH SCREEN ==================== -->
+    <div id="auth-screen" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-logo">
+                    <!-- Red/Rose Plus Symbol -->
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19 10.5h-5.5V5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v5.5H5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5h5.5V19c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-5.5H19c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5z"/>
+                    </svg>
+                </div>
+                <h1 class="auth-title">Lifecare</h1>
+                <p class="auth-subtitle">Select your portal to log in</p>
+            </div>
+
+            <div class="login-box-stack">
+                <!-- Box 1: Public User Login -->
+                <div id="box-public" class="login-box public-box" onclick="selectLoginRole('public')">
+                    <div class="login-box-header">
+                        <div class="login-box-icon">
+                            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 4c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm0 14c-2.03 0-4.43-.82-6.14-2.88C7.55 15.8 9.68 15 12 15s4.45.8 6.14 2.12C16.43 19.18 14.03 20 12 20z" fill="currentColor"/></svg>
+                        </div>
+                        <div>
+                            <div class="login-box-title">Public User Login</div>
+                            <div class="login-box-desc">For common people to consult AI or Doctors</div>
+                        </div>
+                    </div>
+                    <!-- Form inside -->
+                    <div id="form-public" class="auth-form-container" onclick="event.stopPropagation()">
+                        <form onsubmit="handlePublicLogin(event)">
+                            <div class="form-group">
+                                <label for="public-email">Email Address</label>
+                                <div class="input-wrapper">
+                                    <input type="email" id="public-email" class="form-input" placeholder="name@domain.com" required>
+                                    <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-submit public-btn">
+                                Access Dashboard
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Box 2: Doctors Login -->
+                <div id="box-doctor" class="login-box doctor-box" onclick="selectLoginRole('doctor')">
+                    <div class="login-box-header">
+                        <div class="login-box-icon">
+                            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z" fill="currentColor"/></svg>
+                        </div>
+                        <div>
+                            <div class="login-box-title">Doctors Login</div>
+                            <div class="login-box-desc">Verify by uploading Doctor License Number and Photo</div>
+                        </div>
+                    </div>
+                    <!-- Form inside -->
+                    <div id="form-doctor" class="auth-form-container" onclick="event.stopPropagation()">
+                        <form onsubmit="handleDoctorLogin(event)">
+                            <div class="form-group">
+                                <label for="doctor-license">Medical License Number</label>
+                                <div class="input-wrapper">
+                                    <input type="text" id="doctor-license" class="form-input" placeholder="e.g., LIC-XYZ-99" required>
+                                    <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="doctor-license-photo">Upload License Photo</label>
+                                <div class="input-wrapper">
+                                    <input type="file" id="doctor-license-photo" class="form-input" accept="image/*" style="padding-top: 0.6rem;" required>
+                                    <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-submit doctor-btn">
+                                Verify License & Login
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Box 3: Admin Login -->
+                <div id="box-admin" class="login-box admin-box" onclick="selectLoginRole('admin')">
+                    <div class="login-box-header">
+                        <div class="login-box-icon">
+                            <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM8.9 6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H8.9V6z" fill="currentColor"/></svg>
+                        </div>
+                        <div>
+                            <div class="login-box-title">Admin Login</div>
+                            <div class="login-box-desc">Control the website using administrator credentials</div>
+                        </div>
+                    </div>
+                    <!-- Form inside -->
+                    <div id="form-admin" class="auth-form-container" onclick="event.stopPropagation()">
+                        <form onsubmit="handleAdminLogin(event)">
+                            <div class="form-group">
+                                <label for="admin-password">Administrator Password</label>
+                                <div class="input-wrapper">
+                                    <input type="password" id="admin-password" class="form-input" placeholder="••••••••" required>
+                                    <svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>
+                                </div>
+                            </div>
+                            <button type="submit" class="btn-submit admin-btn">
+                                Authenticate Admin
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==================== MAIN SITE LAYOUT (POST-LOGIN) ==================== -->
+    <div id="app-screen" class="app-layout" style="display: none;">
+        <!-- Left Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <div class="sidebar-logo">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19 10.5h-5.5V5c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v5.5H5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5h5.5V19c0 .83.67 1.5 1.5 1.5s1.5-.67 1.5-1.5v-5.5H19c.83 0 1.5-.67 1.5-1.5s-.67-1.5-1.5-1.5z"/>
+                    </svg>
+                </div>
+                <span class="sidebar-brand-name">Lifecare</span>
+            </div>
+
+            <nav class="nav-menu">
+                <li class="nav-item active" data-page="home" onclick="navigateTo('home')">
+                    <a href="#">
+                        <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-page="community" onclick="navigateTo('community')">
+                    <a href="#">
+                        <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+                        <span>Community Pulse</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-page="disease" onclick="navigateTo('disease')">
+                    <a href="#">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                        <span>Disease Hub</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-page="prevention" onclick="navigateTo('prevention')">
+                    <a href="#">
+                        <svg viewBox="0 0 24 24"><path d="M12 22c4.97 0 9-4.03 9-9V7l-9-5-9 5v6c0 4.97 4.03 9 9 9z"/></svg>
+                        <span>Prevention Hub</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-page="finder" onclick="navigateTo('finder')">
+                    <a href="#">
+                        <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                        <span>Healthcare Finder</span>
+                    </a>
+                </li>
+            </nav>
+
+            <div class="sidebar-user-section">
+                <div class="user-info">
+                    <div id="sidebar-avatar" class="user-avatar">P</div>
+                    <div class="user-details">
+                        <span id="sidebar-username" class="user-name">User Name</span>
+                        <span id="sidebar-user-role" class="user-role">Public User</span>
+                    </div>
+                </div>
+                <button class="btn-logout" onclick="performLogout()" title="Log out">
+                    <svg viewBox="0 0 24 24"><path d="M13 3h-2v10h2V3zm4.83 2.17l-1.42 1.42C17.99 7.86 19 9.81 19 12c0 3.87-3.13 7-7 7s-7-3.13-7-7c0-2.19 1.01-4.14 2.58-5.42L6.17 5.17C4.23 6.82 3 9.26 3 12c0 4.97 4.03 9 9 9s9-4.03 9-9c0-2.74-1.23-5.18-3.17-6.83z"/></svg>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Display Content Area -->
+        <main class="main-content">
+
+            <!-- ==================== 2. HOME PAGE ==================== -->
+            <section id="page-home" class="page-view active-page">
+                <div class="page-header">
+                    <h2 class="page-title">Welcome to Lifecare</h2>
+                    <p class="page-subtitle" id="home-welcome-subtitle">Consult symptoms with AI or connect with certified doctors.</p>
+                </div>
+
+                <!-- PUBLIC USER DASHBOARD -->
+                <div id="dashboard-public" style="display: none;">
+                    <div class="home-options-grid" id="public-options">
+                        <!-- Option A: Ask AI -->
+                        <div class="home-card ai-card" onclick="openHomePanel('ai')">
+                            <div class="home-card-icon">
+                                <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5zM11.5 8a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm5 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-5 5h5v2h-5z"/></svg>
+                            </div>
+                            <h3 class="home-card-title">Ask AI Chatbot</h3>
+                            <p class="home-card-desc">Type symptoms of your sickness to instantly receive verified home remedies, warnings, and prevention guidelines.</p>
+                        </div>
+                        
+                        <!-- Option B: Ask Doctor -->
+                        <div class="home-card doctor-card" onclick="openHomePanel('doctor')">
+                            <div class="home-card-icon">
+                                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
+                            </div>
+                            <h3 class="home-card-title">Ask Certified Doctors</h3>
+                            <p class="home-card-desc">Submit your symptoms to the global medical board. Doctors will review and reply to you in a completely private thread.</p>
+                        </div>
+                    </div>
+
+                    <!-- AI Panel -->
+                    <div id="panel-ai" class="chat-panel">
+                        <div class="chat-header">
+                            <div class="chat-header-title">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--public-color)"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                                <span>AI Symptom Assister</span>
+                            </div>
+                            <button class="btn-close-chat" onclick="closeHomePanels()">Close</button>
+                        </div>
+                        <div id="ai-chat-messages" class="chat-messages">
+                            <div class="message-bubble bot">
+                                <span class="message-meta">Lifecare AI Chatbot • Just now</span>
+                                <div class="message-text">Hello! Please describe your symptoms (e.g. fever, chest pain, body aches) and I will provide you with preventative methods, risks, and health tips.</div>
+                            </div>
+                        </div>
+                        <div class="chat-input-area">
+                            <textarea id="ai-chat-input" class="chat-text-area" placeholder="Describe symptoms (e.g. high fever since 2 days, chest discomfort)..."></textarea>
+                            <button class="btn-send" onclick="sendAiMessage()">
+                                <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Ask Doctor Panel -->
+                    <div id="panel-doctor" class="chat-panel">
+                        <div class="chat-header">
+                            <div class="chat-header-title">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="var(--doctor-color)"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+                                <span>Consult Doctors Board</span>
+                            </div>
+                            <button class="btn-close-chat" onclick="closeHomePanels()">Close</button>
+                        </div>
+                        <div id="doctor-submit-area" class="chat-messages" style="flex-grow: 0; padding-bottom: 0.5rem;">
+                            <div class="section-title">Submit New Query</div>
+                            <div class="chat-input-area" style="padding: 0; background: none; border-top: none;">
+                                <textarea id="doc-query-input" class="chat-text-area" style="height: 80px;" placeholder="Briefly write your symptoms and medical history for review..."></textarea>
+                                <button class="btn-send" style="background: var(--doctor-gradient); box-shadow: 0 0 8px var(--doctor-glow);" onclick="submitDoctorQuery()" title="Post to medical board">
+                                    <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="chat-messages" style="border-top: 1px solid var(--border-color); overflow-y: auto;">
+                            <div class="section-title">Your Private Consultation Board</div>
+                            <div id="user-consults-list" class="consult-list">
+                                <!-- Loaded dynamically via app.js -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- DOCTORS DASHBOARD -->
+                <div id="dashboard-doctor" style="display: none;">
+                    <div class="section-title">Unresolved Patient Queries (Global Board)</div>
+                    <div id="doctor-queries-container" class="doc-queries-grid">
+                        <!-- Loaded dynamically via app.js -->
+                    </div>
+                </div>
+
+                <!-- ADMIN DASHBOARD -->
+                <div id="dashboard-admin" style="display: none;">
+                    <div class="admin-metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon">
+                                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-val" id="admin-metric-queries">0</span>
+                                <span class="metric-label">Queries Submitted</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--doctor-color);">
+                                <svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-val" id="admin-metric-resolved">0</span>
+                                <span class="metric-label">Queries Answered</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon" style="background: rgba(59, 130, 246, 0.1); color: var(--public-color);">
+                                <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                            </div>
+                            <div class="metric-info">
+                                <span class="metric-val" id="admin-metric-users">0</span>
+                                <span class="metric-label">Public Accounts</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-tables-container">
+                        <div class="admin-panel-card">
+                            <div class="admin-card-header">
+                                <h3 class="section-title" style="margin-bottom: 0;">Symptom Board Activity Logger</h3>
+                                <div style="display:flex; gap: 0.5rem;">
+                                    <button class="btn-view-reply" onclick="clearLocalDatabase()" style="border-color: #f43f5e; color: #f43f5e;">Reset Database</button>
+                                </div>
+                            </div>
+                            <div class="admin-table-wrapper">
+                                <table class="admin-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Patient Email</th>
+                                            <th>Logged Symptoms</th>
+                                            <th>Date & Time</th>
+                                            <th>Assigned/Replied Doctor</th>
+                                            <th>System Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="admin-queries-tbody">
+                                        <!-- Loaded dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ==================== 3. COMMUNITY PULSE ==================== -->
+            <section id="page-community" class="page-view">
+                <div class="page-header">
+                    <h2 class="page-title">Community Pulse</h2>
+                    <p class="page-subtitle">Epidemiological charts and demographic breakdowns across various medical conditions.</p>
+                </div>
+
+                <!-- Disease Selector Filter -->
+                <div style="margin-bottom: 2rem; display: flex; gap: 1rem; align-items: center; background: rgba(255,255,255,0.02); border: 1px solid var(--border-color); padding: 0.75rem 1.25rem; border-radius: 12px; max-width: 500px;">
+                    <label for="pulse-disease-select" style="font-weight: 600; font-size: 0.95rem; color: var(--text-primary);">Filter Epidemiological Data:</label>
+                    <select id="pulse-disease-select" onchange="updatePulseCharts()" style="flex-grow:1; background: rgba(0,0,0,0.35); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.5rem 0.75rem; color: white; font-family: inherit; font-size: 0.9rem; outline: none; cursor: pointer;">
+                        <option value="fever">Fever / Flu Outbreak</option>
+                        <option value="cholera">Cholera (Water-borne)</option>
+                        <option value="dengue">Dengue (Vector-borne)</option>
+                        <option value="heart">Heart Problems / Cardiac</option>
+                        <option value="covid">COVID-19 Pandemic</option>
+                        <option value="diabetes">Diabetes Mellitus</option>
+                        <option value="typhoid">Typhoid Outbreak</option>
+                    </select>
+                </div>
+
+                <div class="charts-grid">
+                    <!-- Line Chart Card -->
+                    <div class="chart-card">
+                        <div class="chart-title-wrapper">
+                            <h3 class="section-title" id="outbreak-chart-title" style="margin-bottom: 0;">Fever Outbreak Trends</h3>
+                            <span class="badge badge-danger">6-Month Trend</span>
+                        </div>
+                        <div class="chart-canvas-container">
+                            <canvas id="outbreakLineChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Bar Chart Card -->
+                    <div class="chart-card">
+                        <div class="chart-title-wrapper">
+                            <h3 class="section-title" id="demographic-chart-title" style="margin-bottom: 0;">Age Susceptibility Chart</h3>
+                            <span class="badge" style="background: rgba(59,130,246,0.15); color: var(--public-color)">Demographic Spread</span>
+                        </div>
+                        <div class="chart-canvas-container">
+                            <canvas id="ageBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+            <!-- ==================== 4. DISEASE HUB ==================== -->
+            <section id="page-disease" class="page-view">
+                <div class="page-header">
+                    <h2 class="page-title">Disease Hub</h2>
+                    <p class="page-subtitle">Epidemic risk index, warning signals, and symptoms for registered diseases.</p>
+                </div>
+
+                <!-- Disease Search Input -->
+                <div style="margin-bottom: 2rem; max-width: 450px;">
+                    <div class="input-wrapper">
+                        <input type="text" id="disease-search" class="finder-search" placeholder="Type a disease (e.g. Heart Problem, COVID-19, Cholera)..." onkeyup="filterDiseaseHub()">
+                        <svg viewBox="0 0 24 24" style="left:12px; top:50%; width:20px; height:20px; position:absolute; fill:var(--text-secondary); pointer-events:none;"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    </div>
+                </div>
+
+                <div class="disease-grid" id="disease-grid-container">
+                    <!-- Rendered dynamically via app.js -->
+                </div>
+            </section>
+
+
+            <!-- ==================== 5. PREVENTION HUB ==================== -->
+            <section id="page-prevention" class="page-view">
+                <div class="page-header">
+                    <h2 class="page-title">Prevention Hub</h2>
+                    <p class="page-subtitle">Guidelines, sanitization methods, and handmade protections for all diseases.</p>
+                </div>
+
+                <!-- Prevention Search Input -->
+                <div style="margin-bottom: 2rem; max-width: 450px;">
+                    <div class="input-wrapper">
+                        <input type="text" id="prevention-search" class="finder-search" placeholder="Search prevention methods (e.g. Heart, Dengue, Water)..." onkeyup="filterPreventionHub()">
+                        <svg viewBox="0 0 24 24" style="left:12px; top:50%; width:20px; height:20px; position:absolute; fill:var(--text-secondary); pointer-events:none;"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                    </div>
+                </div>
+
+                <div class="prevention-grid" id="prevention-grid-container">
+                    <!-- Rendered dynamically via app.js -->
+                </div>
+            </section>
+
+
+            <!-- ==================== 6. HEALTHCARE FINDER ==================== -->
+            <section id="page-finder" class="page-view">
+                <div class="page-header">
+                    <h2 class="page-title">Tamil Nadu Healthcare Finder</h2>
+                    <p class="page-subtitle">Identify nearest hospitals & clinics dynamically in Tamil Nadu based on location.</p>
+                </div>
+
+                <div class="finder-layout">
+                    <!-- Map Sidebar List -->
+                    <div class="finder-sidebar">
+                        <div class="search-filter-box">
+                            <div id="location-status" style="font-size: 0.75rem; padding: 0.4rem 0.6rem; border-radius: 8px; background: rgba(244,63,94,0.08); border: 1px solid rgba(244,63,94,0.15); color: #f43f5e; margin-bottom: 0.5rem; text-align: center; font-weight: 500;">
+                                📍 Location access required
+                            </div>
+                            
+                            <button id="btn-request-location" class="btn-submit public-btn" style="padding: 0.6rem; font-size: 0.8rem; border-radius: 8px; margin-bottom: 0.5rem;" onclick="getUserLocation()">
+                                📍 Detect My Location
+                            </button>
+
+                            <input type="text" id="facility-search" class="finder-search" placeholder="Search hospitals in Tamil Nadu..." onkeyup="filterFacilities()">
+                            
+                            <div class="filter-pills">
+                                <div class="filter-pill active" onclick="filterFacilityCategory('all')">All</div>
+                                <div class="filter-pill" onclick="filterFacilityCategory('Hospital')">Hospitals</div>
+                                <div class="filter-pill" onclick="filterFacilityCategory('Clinic')">Clinics</div>
+                            </div>
+
+                            <!-- City Selector -->
+                            <select id="facility-city-select" onchange="filterFacilityCity(this.value)" style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid var(--border-color); border-radius: 8px; padding: 0.5rem; color: white; font-family: inherit; font-size: 0.85rem; outline: none; margin-top: 0.25rem;">
+                                <option value="all">All Tamil Nadu Regions</option>
+                                <option value="Chennai">Chennai</option>
+                                <option value="Coimbatore">Coimbatore</option>
+                                <option value="Madurai">Madurai</option>
+                                <option value="Trichy">Trichy</option>
+                                <option value="Salem">Salem</option>
+                            </select>
+                        </div>
+
+                        <div id="facility-cards-list" class="facility-list">
+                            <!-- Loaded dynamically via app.js -->
+                        </div>
+                    </div>
+
+                    <!-- Leaflet Map Panel -->
+                    <div class="map-container-wrapper">
+                        <div id="map"></div>
+                        
+                        <!-- Overlay for directions -->
+                        <div id="direction-overlay" class="map-direction-overlay">
+                            <div class="map-direction-header">
+                                <span>Route Plan to Hospital</span>
+                                <button class="btn-close-chat" style="padding: 2px 6px;" onclick="hideRouteOverlay()">Hide</button>
+                            </div>
+                            <div id="direction-steps-list" class="map-direction-steps">
+                                <!-- Steps listed -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Private Dialog popup for viewing symptom query details & replies -->
+    <div id="query-detail-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; padding: 2rem;">
+        <div class="auth-card" style="max-width: 600px; padding: 2rem; position: relative;">
+            <button class="btn-close-chat" style="position: absolute; right: 20px; top: 20px;" onclick="closeQueryModal()">Close</button>
+            <h3 class="section-title" style="margin-top: 0; padding-right: 2rem;" id="modal-patient-title">Symptom Query Log</h3>
+            
+            <div style="margin: 1.5rem 0; display: flex; flex-direction: column; gap: 1rem;">
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem;">
+                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 0.5rem; font-weight: 600;">SUBMITTED SYMPTOMS:</div>
+                    <div id="modal-patient-symptoms" style="line-height: 1.5;">Waiting for data...</div>
+                    <div id="modal-patient-date" style="font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">Submitted on: -</div>
+                </div>
+                
+                <div style="background: rgba(16, 185, 129, 0.05); border: 1px solid rgba(16, 185, 129, 0.15); border-radius: 12px; padding: 1.25rem;">
+                    <div style="font-size: 0.8rem; color: var(--doctor-color); margin-bottom: 0.5rem; font-weight: 600;">DOCTOR'S PRIVATE REPLY:</div>
+                    <div id="modal-doctor-reply" style="line-height: 1.5; font-style: italic; color: #a7f3d0;">No reply from medical specialists yet. Your request is pending review.</div>
+                </div>
+            </div>
+            
+            <button class="btn-submit public-btn" onclick="closeQueryModal()">Confirm & Close</button>
+        </div>
+    </div>
+
+    <!-- External Leaflet JS for Map -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <!-- External Chart.js CDN for Community charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Application Script Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
